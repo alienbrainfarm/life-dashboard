@@ -1,0 +1,76 @@
+name: Build & Deploy to Cloud Run
+
+on:
+  workflow_dispatch:   # manual trigger only — deploy from the GitHub Actions UI
+
+permissions:
+  contents: read
+  id-token: write     # required for Workload Identity Federation
+
+jobs:
+  deploy:
+    name: Build, push and deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ───────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Authenticate to GCP (keyless — no stored service account key) ──────
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SA_EMAIL }}
+
+      # ── 3. Configure Docker to push to Artifact Registry ─────────────────────
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker europe-west4-docker.pkg.dev --quiet
+
+      # ── 4. Build and push the container image ─────────────────────────────────
+      - name: Build Docker image
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            --tag "${{ vars.GCP_IMAGE }}:${{ github.sha }}" \
+            --tag "${{ vars.GCP_IMAGE }}:latest" \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push "${{ vars.GCP_IMAGE }}:${{ github.sha }}"
+          docker push "${{ vars.GCP_IMAGE }}:latest"
+
+      # ── 5. Deploy to Cloud Run ────────────────────────────────────────────────
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ vars.GCP_SERVICE_NAME }}
+          region: ${{ vars.GCP_REGION }}
+          image: ${{ vars.GCP_IMAGE }}:${{ github.sha }}
+
+      # ── 6. Deploy bg-generator Cloud Function ────────────────────────────────
+      - name: Deploy bg-generator Cloud Function
+        run: |
+          gcloud functions deploy bg-generator \
+            --gen2 \
+            --runtime=python312 \
+            --region=${{ vars.GCP_REGION }} \
+            --source=functions/bg_generator \
+            --entry-point=generate_background \
+            --trigger-http \
+            --no-allow-unauthenticated \
+            --service-account=${{ vars.GCP_SA_EMAIL }} \
+            --set-env-vars="GCS_BUCKET=${{ vars.GCP_PROJECT_ID }}-dashboard-data,BG_BUCKET=${{ vars.GCP_PROJECT_ID }}-dashboard-bg,GCP_PROJECT=${{ vars.GCP_PROJECT_ID }}" \
+            --update-secrets="API_KEY=dashboard-api-key:latest" \
+            --memory=512Mi \
+            --timeout=300s \
+            --project=${{ vars.GCP_PROJECT_ID }}
+
+      # ── 7. Print the service URL ──────────────────────────────────────────────
+      - name: Show deployed URL
+        run: |
+          echo "✓ Deployed: $(gcloud run services describe ${{ vars.GCP_SERVICE_NAME }} \
+            --region=${{ vars.GCP_REGION }} \
+            --format='get(status.url)')"

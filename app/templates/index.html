@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Life Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"
+          integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
+          crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header>
+  <div>
+    <h1>📋 Life Dashboard</h1>
+    <div class="subtitle">Your command centre — week to week &amp; year ahead</div>
+  </div>
+  <div id="today-display"></div>
+</header>
+
+<!-- ══════════ TABS ══════════ -->
+<nav class="tabs">
+  <button class="active" data-tab="week">🗓 This Week</button>
+  <button data-tab="tasks">✅ Tasks</button>
+  <button data-tab="projects">🚀 Projects &amp; Year Ahead</button>
+</nav>
+
+<!-- ══════════ MAIN ══════════ -->
+<main>
+
+  <!-- ── THIS WEEK ── -->
+  <section id="tab-week" class="tab-section active">
+    <div class="week-grid" id="week-grid"></div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="dot" style="background:var(--accent)"></span>Work Focus This Week</h2>
+        </div>
+        <ul class="task-list" id="week-work-tasks"></ul>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="dot" style="background:var(--yellow)"></span>Upcoming Events (14 days)</h2>
+          <div style="display:flex;gap:.5rem">
+            <button class="add-btn" onclick="syncHolidays()" title="Sync Dutch public holidays">🏖 Holidays</button>
+            <button class="add-btn" onclick="syncGcal()" title="Sync Google Calendar">📅 GCal</button>
+            <button class="add-btn" onclick="openModal('recurring')" title="Add recurring event">🔄 Recurring</button>
+            <button class="add-btn" onclick="openModal('events')">+ Add Event</button>
+          </div>
+        </div>
+        <div class="event-list" id="upcoming-events"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TASKS ── -->
+  <section id="tab-tasks" class="tab-section">
+    <div class="two-col">
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="dot" style="background:var(--accent)"></span>Work Tasks</h2>
+          <button class="add-btn" onclick="openModal('tasks',null,'work')">+ Add</button>
+        </div>
+        <ul class="task-list scroll-list" id="list-work"></ul>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="dot" style="background:var(--pink)"></span>Personal Tasks</h2>
+          <button class="add-btn" onclick="openModal('tasks',null,'personal')">+ Add</button>
+        </div>
+        <ul class="task-list scroll-list" id="list-personal"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROJECTS & YEAR AHEAD ── -->
+  <section id="tab-projects" class="tab-section">
+    <div class="two-col">
+      <div class="card">
+        <div class="card-head">
+          <h2><span class="dot" style="background:var(--accent)"></span>Active Projects</h2>
+          <button class="add-btn" onclick="openModal('projects')">+ Add Project</button>
+        </div>
+        <div class="project-list" id="project-list"></div>
+      </div>
+      <div class="card">
+        <h2><span class="dot" style="background:var(--accent2)"></span>Focus Distribution</h2>
+        <div class="chart-wrap"><canvas id="chart-projects"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--purple)"></span>Year Ahead — Roadmap (2026–2027)</h2>
+        <button class="add-btn" onclick="openModal('year_events')">+ Add Milestone</button>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot" style="background:var(--accent)"></span>Work</div>
+        <div class="legend-item"><span class="legend-dot" style="background:var(--pink)"></span>Personal</div>
+      </div>
+      <div class="year-timeline" id="year-timeline"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="dot" style="background:var(--green)"></span>Goal Progress by Project</h2>
+      <div class="chart-wrap"><canvas id="chart-goals"></canvas></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════════ MODAL ══════════ -->
+<div id="modal-overlay" class="modal-overlay hidden" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modal-title">Edit</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>const BG_BUCKET = {{ bg_bucket | tojson }};</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+data/
+docs/
+deploy/
+*.md
+.DS_Store
