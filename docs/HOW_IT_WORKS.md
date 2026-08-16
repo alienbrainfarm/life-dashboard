@@ -2,6 +2,10 @@
 
 A guide to the full system: how the parts fit together locally and in production, how deployments work, and key lessons learned from the build.
 
+> **Note:** the hosted deployment was decommissioned on 2026-08-16 — the GCP project was
+> deleted. The remote URLs below are no longer reachable. Running locally
+> (`python run.py` → `http://127.0.0.1:5000`) is unaffected.
+
 ---
 
 ## 1. The Big Picture

@@ -1,5 +1,9 @@
 # Daily Background Generator
 
+> **Not currently deployed.** The GCP project behind this app was deleted on 2026-08-16, and
+> the GitHub Actions deploy and teardown workflows have been removed. This document is kept as
+> a reference for provisioning from scratch; it has not been exercised since the teardown.
+
 Generates a daily AI photorealistic background for the Week Path view using
 Gemini 2.5 Flash (image generation). Runs as a standalone **Cloud Function**
 triggered at 6 AM Amsterdam time via Cloud Scheduler.

@@ -2,6 +2,10 @@
 
 The dashboard exposes a REST API for programmatic access by agents, scripts, and automation tools.
 
+> **Note:** the hosted deployment was decommissioned on 2026-08-16 — the GCP project was
+> deleted. The remote URLs below are no longer reachable. Running locally
+> (`python run.py` → `http://127.0.0.1:5000`) is unaffected.
+
 ## Two access paths
 
 | Caller | URL | Auth |

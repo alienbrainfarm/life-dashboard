@@ -4,14 +4,17 @@
 Personal Flask dashboard. Single-page app with TinyDB backend. Python/Flask backend, vanilla JS frontend (no framework).
 
 ## Infrastructure
-- **GCP Project:** your-gcp-project-id
-- **Production URL:** https://dashboard.your-domain.com
-- **API URL:** https://life-dashboard-xxxx-ez.a.run.app
-- **Deploy:** GitHub Actions → Cloud Run (manual trigger via `workflow_dispatch`)
-- **Auth:** Google IAP (Identity-Aware Proxy) + API key for agents
-- **Storage:** TinyDB local (`data/dashboard.json`) / GCS in prod
-- **BG Function URL:** https://bg-generator-xxxx-ez.a.run.app
-- **Scheduler:** Cloud Scheduler `daily-bg-generate` in `europe-west1`, 06:00 Amsterdam
+
+**Decommissioned on 2026-08-16 — there is no live deployment.** The GCP project backing this
+app was deleted, along with Cloud Run, the load balancer, the `bg-generator` Cloud Function,
+the daily Cloud Scheduler job, and all GCS buckets. The GitHub Actions deploy/teardown
+workflows have been removed.
+
+Treat the app as **local-only** (see *Running Locally* below). Storage falls back to TinyDB at
+`data/dashboard.json`; the GCS backend in `app/database.py` is inert without `GCS_BUCKET` set.
+Do not reference production URLs or suggest deploying unless the infrastructure is rebuilt.
+
+`docs/DEPLOY.md` and `deploy/setup.sh` are kept as a reference for rebuilding from scratch.
 
 ## Key Files
 | File | Purpose |

@@ -1,5 +1,9 @@
 # Deploying to GCP (Cloud Run + IAP)
 
+> **Not currently deployed.** The GCP project behind this app was deleted on 2026-08-16, and
+> the GitHub Actions deploy and teardown workflows have been removed. This document is kept as
+> a reference for provisioning from scratch; it has not been exercised since the teardown.
+
 ## Architecture
 
 ```
