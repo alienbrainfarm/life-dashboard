@@ -39,6 +39,10 @@ Local mode uses `data/dashboard.json` on disk. No GCS credentials or API key nee
 
 ## Deploying to GCP
 
+> **Not currently deployed.** The GCP project behind this app was deleted on 2026-08-16, and
+> the GitHub Actions deploy and teardown workflows have been removed. This document is kept as
+> a reference for provisioning from scratch; it has not been exercised since the teardown.
+
 See **[docs/DEPLOY.md](docs/DEPLOY.md)** for full instructions. In summary:
 
 1. Set up the OAuth consent screen in the GCP Console (one-time manual step)
@@ -46,7 +50,7 @@ See **[docs/DEPLOY.md](docs/DEPLOY.md)** for full instructions. In summary:
 3. Run `./deploy/setup.sh` — provisions Cloud Run, GCS, Load Balancer, IAP, Workload Identity Federation, and the background generator Cloud Function
 4. Add the printed variables to your GitHub repo (Settings → Actions → Variables)
 5. Point DNS to the Load Balancer IP and wait ~15 min for SSL to provision
-6. Trigger a deploy from **GitHub Actions → Build & Deploy to Cloud Run → Run workflow**
+6. Restore a deploy workflow (the removed `.github/workflows/deploy.yml` is in git history) and run it
 
 Once live, the dashboard is available at your domain, gated by your Google login via IAP.
 
@@ -60,11 +64,6 @@ life-dashboard/
 ├── run.py                  ← entry point  (python run.py)
 ├── requirements.txt        ← pip dependencies (lightweight — no ML libs)
 ├── mcp_server.py           ← standalone MCP server (local agent use)
-│
-├── .github/
-│   └── workflows/
-│       ├── deploy.yml      ← GitHub Actions: build, push, deploy (manual trigger)
-│       └── teardown.yml    ← GitHub Actions: tear down GCP services (manual trigger)
 │
 ├── app/
 │   ├── __init__.py         ← Flask app factory
