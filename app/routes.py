@@ -159,9 +159,10 @@ def sync_holidays():
         try:
             with urllib.request.urlopen(url, timeout=10) as resp:
                 holidays = json.loads(resp.read())
-        except Exception as e:
+        except Exception:
             db.close()
-            return jsonify({"error": f"Failed to fetch holidays for {year}: {e}"}), 502
+            logger.exception("Holiday fetch failed for %s", year)
+            return jsonify({"error": f"Failed to fetch holidays for {year}"}), 502
 
         # Remove existing entries for this year before re-inserting
         tbl.remove(H.date.matches(f"^{year}-"))
@@ -202,9 +203,9 @@ def sync_gcal():
         creds, _ = google.auth.default(
             scopes=["https://www.googleapis.com/auth/calendar.readonly"]
         )
-    except Exception as e:
-        logger.error("GCal auth failed: %s", e)
-        return jsonify({"error": f"Google auth failed: {e}"}), 502
+    except Exception:
+        logger.exception("GCal auth failed")
+        return jsonify({"error": "Google auth failed"}), 502
 
     try:
         service = build("calendar", "v3", credentials=creds, cache_discovery=False)
@@ -220,9 +221,9 @@ def sync_gcal():
             orderBy="startTime",
             maxResults=250,
         ).execute()
-    except Exception as e:
-        logger.error("GCal API call failed: %s", e)
-        return jsonify({"error": f"Google Calendar API error: {e}"}), 502
+    except Exception:
+        logger.exception("GCal API call failed")
+        return jsonify({"error": "Google Calendar API error"}), 502
 
     db  = get_db()
     tbl = db.table("gcal_events")

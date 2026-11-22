@@ -13,4 +13,6 @@ app = create_app()
 
 if __name__ == "__main__":
     print("\n🗓  Life Dashboard is running → http://127.0.0.1:5000\n")
-    app.run(debug=True, port=5000)
+    # Debug mode (Werkzeug debugger) is opt-in: FLASK_DEBUG=1 python run.py
+    debug = os.environ.get("FLASK_DEBUG", "").lower() in ("1", "true", "yes")
+    app.run(debug=debug, port=5000)
