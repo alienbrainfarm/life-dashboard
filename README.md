@@ -33,7 +33,7 @@ python run.py
 #    http://127.0.0.1:5000
 ```
 
-Local mode uses `data/dashboard.json` on disk. No GCS credentials or API key needed.
+Local mode uses `data/dashboard.json` on disk. No GCS credentials or API key needed. Set `FLASK_DEBUG=1` to enable auto-reload and the Werkzeug debugger (local only, never on a shared network).
 
 ---
 
@@ -160,6 +160,12 @@ See **[docs/MAC_CALENDAR_SYNC.md](docs/MAC_CALENDAR_SYNC.md)** for full details.
 
 ---
 
+## Security
+
+Please report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
+
+---
+
 ## Licence
 
-Personal use.
+[MIT](LICENSE)
